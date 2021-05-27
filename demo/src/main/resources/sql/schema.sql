@@ -1,0 +1,5 @@
+create table if not exists MESSAGES
+(
+    id varchar(60) default random_uuid() primary key,
+    text varchar not null
+);
