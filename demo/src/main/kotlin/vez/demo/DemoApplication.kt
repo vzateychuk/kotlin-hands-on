@@ -2,6 +2,7 @@ package vez.demo
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.data.annotation.Id
 import org.springframework.data.jdbc.repository.query.Query
 import org.springframework.data.relational.core.mapping.Table
 import org.springframework.data.repository.CrudRepository
@@ -47,7 +48,10 @@ interface MessageRepository : CrudRepository<Message, String> {
 }
 
 @Table("MESSAGES")
-data class Message(val id: Long?, val text: String){
+data class Message(
+	@Id val id: String?,
+	val text: String
+){
 
 	override fun toString(): String {
 		return "Message(id=$id, text='$text')"
