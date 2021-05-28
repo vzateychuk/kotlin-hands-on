@@ -1,2 +1,2 @@
 rootProject.name = "kotlin-hands-on"
-include("demo", "extention")
+include("demo", "extention", "chat-kotlin")
