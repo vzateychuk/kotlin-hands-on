@@ -1,15 +1,12 @@
 package vez.chat.controller
 
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import vez.chat.model.MessageVM
 import vez.chat.service.MessageService
 
 @RestController
-@RequestMapping("/api/vi/messages")
+@RequestMapping("/api/v1/messages")
 class MessageResource(val messageService: MessageService) {
 
     @GetMapping
@@ -33,5 +30,10 @@ class MessageResource(val messageService: MessageService) {
                         body(messages)
                     }
                 }
+    }
+
+    @PostMapping
+    fun post(@RequestBody message: MessageVM) {
+        messageService.post(message)
     }
 }
