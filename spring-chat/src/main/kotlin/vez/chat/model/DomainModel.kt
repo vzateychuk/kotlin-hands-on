@@ -15,5 +15,5 @@ data class MessageModel(
     )
 
 enum class ContentType {
-    PLAIN
+    PLAIN, MARKDOWN
 }

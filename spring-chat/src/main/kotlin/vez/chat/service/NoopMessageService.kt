@@ -38,7 +38,7 @@ class NoopMessageService : MessageService {
         return latest()
     }
 
-    override fun post(message: MessageVM) {
+    override fun post(message: MessageVM): MessageVM {
         TODO("Not yet implemented")
     }
 }

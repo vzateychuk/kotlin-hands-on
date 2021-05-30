@@ -33,7 +33,6 @@ class MessageResource(val messageService: MessageService) {
     }
 
     @PostMapping
-    fun post(@RequestBody message: MessageVM) {
-        messageService.post(message)
-    }
+    fun post(@RequestBody message: MessageVM): MessageVM = messageService.post(message)
+
 }

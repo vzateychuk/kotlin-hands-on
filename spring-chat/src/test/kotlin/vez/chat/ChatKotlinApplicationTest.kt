@@ -12,11 +12,9 @@ import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
 import org.springframework.http.RequestEntity
-import vez.chat.model.ContentType
-import vez.chat.model.MessageModel
-import vez.chat.model.MessageVM
-import vez.chat.model.UserVM
+import vez.chat.model.*
 import vez.chat.repo.MessageRepository
 import java.net.URI
 import java.net.URL
@@ -71,27 +69,27 @@ class ChatKotlinApplicationTest {
 
 
         // Use copy method, which lets you make a full copy of the instance while customizing certain fields if necessary.
-        val copiedMsgList = messages?.map { with(it) { copy(id=null, sent = sent.truncatedTo(ChronoUnit.MILLIS))} }
-
-        assertThat(copiedMsgList).containsSequence(
-                MessageVM("testMessage3",
-                    UserVM("test3", URL("http://test.com") ),
-                    now.truncatedTo(ChronoUnit.MILLIS)
-                ),
-            MessageVM("testMessage2",
-                UserVM("test2", URL("http://test.com") ),
-                now.minusSeconds(1).truncatedTo(ChronoUnit.MILLIS)
-            )
-        )
+        val copiedMsgList = messages?.map { it.copyVmForTest() }
 
         if (!withLastMessageId) {
-            assertThat(copiedMsgList).last().isEqualTo(
+            assertThat(copiedMsgList).first().isEqualTo(
                 MessageVM("testMessage1",
                     UserVM("test1", URL("http://test.com") ),
                     now.minusSeconds(2).truncatedTo(ChronoUnit.MILLIS)
                 )
             )
         }
+
+        assertThat(copiedMsgList).containsSequence(
+                MessageVM("testMessage2",
+                    UserVM("test2", URL("http://test.com") ),
+                    now.minusSeconds(1).truncatedTo(ChronoUnit.MILLIS)
+                ),
+                MessageVM("testMessage3",
+                    UserVM("test3", URL("http://test.com") ),
+                    now.truncatedTo(ChronoUnit.MILLIS)
+                )
+        )
 
     }
 
@@ -110,15 +108,31 @@ class ChatKotlinApplicationTest {
         messageRepository.findAll()
             .last { it.content.contains("testMessage4") }
             .apply {
-                assertThat(this.copy(id=null, sent = sent.truncatedTo(ChronoUnit.MILLIS)))
+                assertThat( this.copyForTest() )
                     .isEqualTo(
                         MessageModel("testMessage4",
-                            ContentType.PLAIN,
+                            ContentType.MARKDOWN,
                             now.plusSeconds(1).truncatedTo(ChronoUnit.MILLIS),
                             "test4",
                             "http://test.com"
                         )
                     )
             }
+    }
+
+    @Test
+    fun `messages with MARKDOWN are rendered`() {
+        val resp = client.postForEntity<MessageVM>(
+            URI("/api/v1/messages"),
+            MessageVM(
+                "testMessage5",
+                UserVM("test5", URL("http://test.com")),
+                now.plusSeconds(1)
+            )
+        )
+
+
+        assertThat(resp.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(resp.body?.asModel()?.contentType).isEqualTo(ContentType.MARKDOWN)
     }
 }

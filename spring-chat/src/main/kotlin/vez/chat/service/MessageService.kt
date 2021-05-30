@@ -8,6 +8,6 @@ interface MessageService {
 
     fun after(lastMessageId: String): List<MessageVM>
 
-    fun post(message: MessageVM)
+    fun post(message: MessageVM): MessageVM
 
 }

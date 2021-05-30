@@ -7,9 +7,9 @@ import vez.chat.model.MessageModel
 
 interface MessageRepository: CrudRepository<MessageModel, String>  {
 
-    @Query("select * from MESSAGES order by SENT desc limit 10")
+    @Query("SELECT * FROM (select * from MESSAGES order by SENT desc limit 10) ORDER BY SENT ASC")
     fun findLatest(): List<MessageModel>
 
-    @Query("select * from MESSAGES where SENT > (select SENT from MESSAGES where ID = :id) order by SENT desc")
+    @Query("SELECT * FROM (select * from MESSAGES where SENT > (select SENT from MESSAGES where ID = :id) order by SENT desc) ORDER BY SENT ASC")
     fun findLatest(@Param("id") id: String): List<MessageModel>
 }
